@@ -1,0 +1,107 @@
+<?php
+global $filter;
+include 'db_connection.php';
+
+$db = connectDatabase();
+
+$filter = $_GET["filter"] ?? "";
+
+if(!empty($filter) and in_array($filter, ["Pending", "Done"])){
+    $query = $db->prepare("SELECT * FROM tasks_table WHERE status = :filter");
+    $query->bindValue(':filter', $filter, SQLITE3_TEXT);
+    $result = $query->execute();
+}
+else {
+    $query = "SELECT * FROM tasks_table";
+    $result = $db->query($query);
+}
+
+if (!$result) {
+    die("Error fetching tasks: " . $db->lastErrorMsg());
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Students</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div style="display: flex; align-items: center; justify-content: space-between">
+    <h1>Task List</h1>
+    <a href="add_task_form.php">
+        Add Task
+    </a>
+
+    <form action="index.php" method="get" style="display:inline;">
+        <label>
+            <select name="filter" onchange="this.form.submit()">
+                <option value="All" <?php echo $filter === "All" ? "selected" : "";?>>
+                    All
+                </option>
+                <option value="Pending" <?php echo $filter === "Pending" ? "selected" : "";?>>
+                    Pending
+                </option>
+                <option value="Done" <?php echo $filter === "Done" ? "selected" : "";?>>
+                    Done
+                </option>
+            </select>
+        </label>
+    </form>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Due Date</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Additional</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php if ($result): ?>
+        <?php while ($task = $result->fetchArray(SQLITE3_ASSOC)): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($task['id']); ?></td>
+                <td><?php echo htmlspecialchars($task['title']); ?></td>
+                <td><?php echo htmlspecialchars($task['due_date']); ?></td>
+                <td><?php echo htmlspecialchars($task['priority']); ?></td>
+                <td><?php echo htmlspecialchars($task['status']); ?></td>
+                <td>
+                    <form action="delete_task.php" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
+                        <button type="submit">Delete</button>
+                    </form>
+                    <form action="update_task_form.php" method="get" style="display:inline;">
+                        <input type="hidden" name="id" value="<?php echo $task['id']; ?>">
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5">No tasks found.</td>
+        </tr>
+    <?php endif; ?>
+    </tbody>
+</table>
+</body>
+</html>
