@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PHPUnit">
+    <option name="directories">
+      <list>
+        <option value="$PROJECT_DIR$/lab5and6/2025_petok/tests/Unit" />
+        <option value="$PROJECT_DIR$/lab5and6/2025_petok/tests/Feature" />
+        <option value="$PROJECT_DIR$/lab7/tests/Unit" />
+        <option value="$PROJECT_DIR$/lab7/tests/Feature" />
+        <option value="$PROJECT_DIR$/lab4/2025_petok/lab/tests/Unit" />
+        <option value="$PROJECT_DIR$/lab4/2025_petok/lab/tests/Feature" />
+      </list>
+    </option>
+  </component>
+</project>
